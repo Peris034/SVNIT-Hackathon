@@ -1,0 +1,136 @@
+/* Navbar Styling */
+.navbar {
+    background: #222;
+    padding: 10px 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .navbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  /* Brand Styling */
+  .navbar-brand {
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  
+  /* Navigation Links */
+  .navbar-links {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav-link {
+    color: #fff;
+    font-size: 16px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-link:hover {
+    color: #f44336;
+  }
+  
+  /* User Section */
+  .navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  /* User Dropdown */
+  .user-dropdown {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background 0.3s;
+  }
+  
+  .user-dropdown:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* User Icon */
+  .user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f44336;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    transition: transform 0.3s ease;
+  }
+  
+  .user-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  /* Username */
+  .username {
+    font-weight: bold;
+    margin-left: 10px;
+    font-size: 16px;
+    color: #fff;
+  }
+  
+  /* Dropdown Menu */
+  .dropdown-menu {
+    background: #222;
+    border: 1px solid #444;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    min-width: 150px;
+  }
+  
+  .profile-item {
+    color: #fff;
+    font-weight: 500;
+  }
+  
+  .dropdown-item {
+    color: #fff;
+    transition: background 0.3s;
+    padding: 10px 15px;
+  }
+  
+  .dropdown-item:hover {
+    background: #f44336;
+  }
+  
+  /* Logout Button */
+  .logout-btn {
+    color: #f44336;
+    font-weight: bold;
+  }
+  
+  .logout-btn:hover {
+    background: #f44336;
+    color: #fff;
+  }
+  
+  /* Login Button */
+  .login-btn {
+    color: #fff;
+    font-size: 16px;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+  }
+  
+  .login-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  

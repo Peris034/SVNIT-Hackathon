@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import process from "process";
 import { Mail, Lock, User, Phone, Twitter, Loader2 } from 'lucide-react';
-// import Navbar from '../Navbar';
+import Navbar from '../Navbar';
 import { loginSchema, signUpSchema } from '../../validation/userSchema';
 import { useNavigate } from 'react-router-dom';
 import { useDebounceCallback } from 'usehooks-ts'
@@ -204,7 +204,7 @@ const Signup = () => {
 
   return (
     <>
-      {/* <Navbar /> */}
+      <Navbar />
       <div style={styles.container}>
         <div style={styles.card}>
           <h1 style={styles.title}>Virus rovers</h1>
