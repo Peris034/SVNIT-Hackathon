@@ -1,3 +1,4 @@
+import React from "react";
 export function Input({ type, placeholder, value, onChange, className }) {
     return (
       <input

@@ -7,10 +7,10 @@ import Logindetail from "./component/Account/Logindetail";
 import Signup from "./component/Auth/Signup";
 // import Users from "./component/Users/Users";
 import Map from "./component/Map/Map";
-// import Incident from "./component/Incident/Incident";
+import Incident from "./component/Incident/Incident";
 // import Incidents from "./component/Incident/Incidents";
 import SosButton from './component/Sos/SosButton';
-// import Emergency from './component/Emergency/Emergency';
+import Emergency from './component/Emergency/Emergency';
 // import NewsFeed from './component/News/NewsFeed';
 import notificationService from './firebase/notification.service';
 // import Post from './component/Post/Post';
@@ -36,10 +36,10 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         {/* <Route path="/users" element={<Users />} /> */}
         <Route path="/map" element={<Map />} />
-        {/* <Route path="/incident" element={<Incident />} /> */}
+        <Route path="/incident" element={<Incident />} />
         {/* <Route path="/incidents" element={<Incidents />} /> */}
         <Route path="/sos" element={<SosButton />} />
-        {/* <Route path="/emergency" element={<Emergency />} /> */}
+        <Route path="/emergency" element={<Emergency />} />
         {/* <Route path="/news" element={<NewsFeed />} /> */}
         {/* <Route path="/post" element={<Post />} /> */}
         {/* <Route path="/adminpost" element={<Adminpost />} /> */}
