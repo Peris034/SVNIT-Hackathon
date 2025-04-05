@@ -52,6 +52,7 @@ const Map = () => {
             if (!response.ok) throw new Error("Failed to fetch SOS alerts");
             const data = await response.json();
             setSosAlerts(data);
+            console.log("first,sos",data)
         } catch (error) {
             console.error("Error fetching SOS alerts:", error);
         }
@@ -107,7 +108,7 @@ const Map = () => {
                     </MapContainer>
                 </div>
             </div>
-            <div className="table-container">
+            {/* <div className="table-container">
                 <table className="table">
                     <thead>
                         <tr>
@@ -152,7 +153,76 @@ const Map = () => {
                         ))}
                     </tbody>
                 </table>
+            </div> */}
+            <div className="overflow-x-auto rounded-xl p-4 shadow-md border border-gray-200 my-4 bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300">
+                <table className="min-w-full table-auto text-sm text-left text-gray-700 bg-white rounded-lg overflow-hidden">
+                    <thead className="bg-gray-100 text-gray-800 uppercase text-xs tracking-wider">
+                        <tr>
+                            <th
+                                onClick={() => setSortAscending(!sortAscending)}
+                                className="px-4 py-3 cursor-pointer hover:text-blue-600"
+                            >
+                                ID {sortAscending ? "▲" : "▼"}
+                            </th>
+                            <th className="px-4 py-3">
+                                Status
+                                <select
+                                    onChange={(e) => setStatusFilter(e.target.value)}
+                                    value={statusFilter}
+                                    className="ml-2 p-1 rounded-md border border-gray-300 text-gray-700"
+                                >
+                                    <option value="ALL">All</option>
+                                    {STATUS_OPTIONS.map((status) => (
+                                        <option key={status} value={status}>
+                                            {status}
+                                        </option>
+                                    ))}
+                                </select>
+                            </th>
+                            <th className="px-4 py-3">Latitude</th>
+                            <th className="px-4 py-3">Longitude</th>
+                            <th className="px-4 py-3">Created At</th>
+                            <th className="px-4 py-3">Message</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                        {sortedAlerts.map((alert) => (
+                            <tr
+                                key={alert._id}
+                                className="hover:bg-gray-50 transition-colors duration-200"
+                            >
+                                <td className="px-4 py-2">{alert._id}</td>
+                                <td
+                                    onClick={() => setEditingStatus(alert._id)}
+                                    className="px-4 py-2 cursor-pointer"
+                                >
+                                    {editingStatus === alert._id ? (
+                                        <select
+                                            onChange={(e) => updateStatus(alert._id, e.target.value)}
+                                            autoFocus
+                                            onBlur={() => setEditingStatus(null)}
+                                            className="p-1 rounded-md border border-gray-300 text-gray-700"
+                                        >
+                                            {STATUS_OPTIONS.map((status) => (
+                                                <option key={status} value={status}>
+                                                    {status}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        alert.status
+                                    )}
+                                </td>
+                                <td className="px-4 py-2">{alert.latitude}</td>
+                                <td className="px-4 py-2">{alert.longitude}</td>
+                                <td className="px-4 py-2">{alert.timestamp}</td>
+                                <td className="px-4 py-2">{alert.message}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
+
         </>
     );
 };

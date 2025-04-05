@@ -1,3 +1,4 @@
+@import "tailwindcss";
 /* Navbar Styling */
 .navbar {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
