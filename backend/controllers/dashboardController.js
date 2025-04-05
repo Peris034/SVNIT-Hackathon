@@ -8,34 +8,28 @@ export const dashboardData = async (req,res) => {
     try {
         // Get basic stats
         const totalUsers = await User.countDocuments({ role: "user" });
-        
-        const activeUsers = await Log.countDocuments({
-            role: "user",
-            lastLogin: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } // Last 30 days
-        });
-        console.log("Active Users in last 30 days:", activeUsers);
-        
+        const activeUsers = await Log.countDocuments({ role: "user" });
         const totalAlerts = await Sos.countDocuments();
 
-        // Get recent emergency alerts (last 5)
-        const recentAlerts = await Sos.find()
-            .sort({ timestamp: -1 })
-            .limit(5)
-            .populate('userId', 'name') // Get user's name who created alert
-            .select('timestamp location status message');
+        // Simple status count aggregation
+        const statusCounts = await Sos.aggregate([
+            {
+                $group: {
+                    _id: "$status",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
 
-        // Get recent user registrations (last 5)
-        const recentUsers = await User.find({ role: "user" })
-            .sort({ createdAt: -1 })
-            .limit(5)
-            .select('name email createdAt');
+        console.log("Status counts:", statusCounts); // Debug log
 
         res.status(200).json({
             totalUsers,
             activeUsers,
             totalAlerts,
-            recentAlerts,
-            recentUsers
+            recentAlerts: await Sos.find().sort({ timestamp: -1 }).limit(5),
+            recentUsers: await User.find({ role: "user" }).sort({ createdAt: -1 }).limit(5),
+            chartData: statusCounts
         });
 
     } catch (error) {
