@@ -1,0 +1,230 @@
+/* General Page Styling */
+.map-page {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow-x: hidden;
+    background-color: #f9f9f9;
+}
+
+/* Map Container Styling */
+.map-container {
+    position: relative;
+    height: 450px;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ccc;
+    margin: 20px 0;
+    z-index: 0;
+}
+
+.map-box {
+    height: 100%;
+    width: 100%;
+}
+
+/* Map Controls */
+.map-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+}
+
+.map-controls button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.map-controls button:hover {
+    background: #f0f0f0;
+    transform: scale(1.05);
+}
+
+/* Loading & Error Messages */
+.loading,
+.error {
+    text-align: center;
+    padding: 20px;
+    margin: 20px 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.error {
+    color: #e74c3c;
+}
+
+/* Custom Marker Icons */
+.custom-div-icon {
+    background: none;
+    border: none;
+}
+
+/* Hide Default Leaflet Attribution */
+:global .leaflet-bottom {
+    display: none !important;
+}
+
+/* Table Styling */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    max-height: 400px;
+    margin-top: 20px;
+    position: relative;
+    z-index: 1000;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    white-space: nowrap;
+    table-layout: auto;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Table Headers & Cells */
+.table th,
+.table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+    white-space: nowrap;
+    position: relative;
+}
+
+/* Expand text on hover without breaking layout */
+.table td:hover {
+    white-space: normal;
+    overflow: visible;
+    background-color: rgba(232, 232, 232, 0.9);
+    position: relative;
+    z-index: 1002;
+    max-width: 200px;
+    word-wrap: break-word;
+}
+
+/* Improved Dropdown Styling */
+.status-select {
+    position: relative;
+    z-index: 1050;
+    background: white;
+    border: 1px solid #ccc;
+    width: 100%;
+    min-width: 100px;
+    max-width: 100%;
+    padding: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Ensure Dropdown is Fully Visible */
+.status-select:focus {
+    z-index: 1005;
+    position: relative;
+    max-width: 200px;
+    min-width: 120px;
+    white-space: normal;
+    overflow: visible;
+}
+
+/* Adjust dropdown list position */
+.status-select option {
+    white-space: normal;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .map-container {
+        height: 350px;
+    }
+
+    .table {
+        font-size: 13px;
+    }
+
+    .status-select {
+        font-size: 13px;
+        padding: 5px;
+    }
+}
+
+@media (max-width: 768px) {
+    .map-container {
+        height: 300px;
+    }
+
+    .table {
+        font-size: 12px;
+    }
+
+    .table-container {
+        max-height: 300px;
+    }
+
+    .table th,
+    .table td {
+        padding: 8px;
+        max-width: 120px;
+    }
+
+    .table td:hover {
+        max-width: 180px;
+    }
+
+    .status-select {
+        font-size: 12px;
+        padding: 4px;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .map-container {
+        height: 250px;
+    }
+
+    .map-controls {
+        gap: 5px;
+    }
+
+    .map-controls button {
+        width: 30px;
+        height: 30px;
+    }
+
+    .table {
+        font-size: 11px;
+    }
+
+    .table th,
+    .table td {
+        padding: 6px;
+        max-width: 100px;
+    }
+
+    .status-select {
+        font-size: 11px;
+        padding: 3px;
+        max-width: 100%;
+    }
+}
