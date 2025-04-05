@@ -8,28 +8,58 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import "leaflet.markercluster";
 import "./Map.css";
+import MarkerClusterGroup from 'react-leaflet-markercluster';
+// import 'react-leaflet-markercluster/dist/styles.min.css';
 
 const API_URL = import.meta.env.VITE_API_URL;
-const GEO_API_KEY = import.meta.env.VITE_GEOLOCATION_API_KEY;
 const STATUS_OPTIONS = ["PENDING", "RESOLVED", "CANCELLED", "ACTIVE"];
 
-const createCustomIcon = (color) =>
-  L.divIcon({
-    html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 0C7.58 0 4 3.58 4 8C4 13.54 12 24 12 24C12 24 20 13.54 20 8C20 3.58 16.42 0 12 0Z" fill="${color}"/>
-            <circle cx="12" cy="8" r="4" fill="white"/>
-        </svg>`,
-    className: "custom-div-icon",
-    iconSize: [24, 24],
-    iconAnchor: [12, 24],
-    popupAnchor: [0, -24],
-  });
+const createCustomIcon = (status) => {
+  const colors = {
+    ACTIVE: "#FF5733",
+    RESOLVED: "#28A745",
+    CANCELLED: "#6C757D",
+    PENDING: "#007BFF"
+  };
 
-const icons = {
-  ACTIVE: createCustomIcon("#FF5733"),
-  RESOLVED: createCustomIcon("#28A745"),
-  CANCELLED: createCustomIcon("#6C757D"),
-  PENDING: createCustomIcon("#007BFF"),
+  return L.divIcon({
+    html: `
+      <div class="custom-marker-container ${status.toLowerCase()}">
+        <div class="marker-inner">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0C7.58 0 4 3.58 4 8C4 13.54 12 24 12 24C12 24 20 13.54 20 8C20 3.58 16.42 0 12 0Z" fill="${colors[status]}"/>
+            <circle cx="12" cy="8" r="4" fill="white"/>
+          </svg>
+        </div>
+        <div class="ripple"></div>
+        <div class="ripple delay-1"></div>
+        <div class="ripple delay-2"></div>
+      </div>
+    `,
+    className: `custom-div-icon ${status.toLowerCase()}`,
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -40],
+  });
+};
+
+const createClusterIcon = (cluster) => {
+  const childCount = cluster.getChildCount();
+  let size = 'small';
+  
+  if (childCount > 50) size = 'large';
+  else if (childCount > 20) size = 'medium';
+
+  return L.divIcon({
+    html: `
+      <div class="cluster-marker ${size}">
+        <span>${childCount}</span>
+      </div>
+    `,
+    className: 'custom-cluster-icon',
+    iconSize: L.point(40, 40),
+    iconAnchor: [20, 20]
+  });
 };
 
 const Map = () => {
@@ -44,58 +74,35 @@ const Map = () => {
   const getCityFromCoords = async (lat, lon) => {
     const key = `${lat},${lon}`;
     if (geocodeCache.current[key]) return geocodeCache.current[key];
-  
-    const tryOpenCage = async () => {
+    try {
       const response = await fetch(
-        `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${GEO_API_KEY}&no_annotations=1&language=en`
+        `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=7fbe61397f1343579a768e1800ff125c&no_annotations=1&language=en`
       );
-      if (!response.ok) throw new Error("OpenCage failed");
+  
+      if (!response.ok) {
+        throw new Error(`Geocoding error: ${response.status}`);
+      }
+  
       const data = await response.json();
       const components = data.results[0]?.components || {};
-      return (
+  
+      // Prioritize known city fields
+      const city =
         components.city ||
         components.town ||
         components.village ||
-        components.state_district ||
-        components.state ||
-        "Unknown"
-      );
-    };
+        components.state_district || // Sometimes OpenCage puts cities here (especially in India)
+        components.state || // As a last resort
+        "Unknown";
   
-    const tryNominatim = async () => {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10&addressdetails=1`,
-        { headers: { "User-Agent": "localhost/1.0" } }
-      );
-      if (!response.ok) throw new Error("Nominatim failed");
-      const data = await response.json();
-      const components = data.address || {};
-      return (
-        components.city ||
-        components.town ||
-        components.village ||
-        components.county ||
-        components.state ||
-        "Unknown"
-      );
-    };
-  
-    try {
-      const city = await tryOpenCage();
       geocodeCache.current[key] = city;
       return city;
-    } catch (e1) {
-      try {
-        const city = await tryNominatim();
-        geocodeCache.current[key] = city;
-        return city;
-      } catch (e2) {
-        console.error("Both geocoding services failed:", e2.message);
-        return "Unknown";
-      }
+    } catch (error) {
+      console.error("Reverse geocoding failed:", error.message);
+      return "Unknown";
     }
   };
-        
+      
   const fetchSosAlerts = async () => {
     try {
       const res = await fetch(`${API_URL}/sos/sos-alerts`, {
@@ -173,28 +180,39 @@ const Map = () => {
             className="map-box"
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            {sortedAlerts.map(
-              (alert) =>
-                alert.latitude &&
-                alert.longitude && (
-                  <Marker
-                    key={alert._id}
-                    position={[alert.latitude, alert.longitude]}
-                    icon={icons[alert.status] || icons.PENDING}
-                  >
-                    <Popup>
-                      <div>
-                        <strong>Status:</strong> {alert.status}
-                        <br />
-                        <strong>Message:</strong> {alert.message}
-                        <br />
-                        <strong>Created At:</strong>{" "}
-                        {new Date(alert.timestamp).toLocaleString()}
-                      </div>
-                    </Popup>
-                  </Marker>
-                )
-            )}
+            
+            <MarkerClusterGroup
+              chunkedLoading
+              iconCreateFunction={createClusterIcon}
+              spiderfyOnMaxZoom={true}
+              showCoverageOnHover={false}
+              zoomToBoundsOnClick={true}
+              maxClusterRadius={50}
+            >
+              {sortedAlerts.map(
+                (alert) =>
+                  alert.latitude &&
+                  alert.longitude && (
+                    <Marker
+                      key={alert._id}
+                      position={[alert.latitude, alert.longitude]}
+                      icon={createCustomIcon(alert.status || 'PENDING')}
+                    >
+                      <Popup>
+                        <div className="popup-content">
+                          <div className={`status-badge ${alert.status.toLowerCase()}`}>
+                            {alert.status}
+                          </div>
+                          <p className="message"><strong>Message:</strong> {alert.message}</p>
+                          <p className="timestamp">
+                            <strong>Created:</strong> {new Date(alert.timestamp).toLocaleString()}
+                          </p>
+                        </div>
+                      </Popup>
+                    </Marker>
+                  )
+              )}
+            </MarkerClusterGroup>
           </MapContainer>
         </div>
       </div>
@@ -306,6 +324,234 @@ const Map = () => {
           </tbody>
         </table>
       </div>
+
+      <style>{`
+        .custom-marker-container {
+          position: relative;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .marker-inner {
+          position: relative;
+          z-index: 2;
+          animation: bounce 1s infinite;
+        }
+
+        .marker-inner svg {
+          filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .ripple {
+          position: absolute;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          animation: ripple 2s ease-out infinite;
+        }
+
+        .ripple.delay-1 {
+          animation-delay: 0.5s;
+        }
+
+        .ripple.delay-2 {
+          animation-delay: 1s;
+        }
+
+        .active .ripple {
+          background: rgba(255, 87, 51, 0.3);
+          animation-duration: 1.5s;
+        }
+
+        .pending .ripple {
+          background: rgba(0, 123, 255, 0.3);
+        }
+
+        .resolved .ripple {
+          background: rgba(40, 167, 69, 0.3);
+          animation-duration: 2.5s;
+        }
+
+        .cancelled .ripple {
+          background: rgba(108, 117, 125, 0.3);
+          animation-duration: 3s;
+        }
+
+        @keyframes ripple {
+          0% {
+            transform: scale(1);
+            opacity: 0.8;
+          }
+          100% {
+            transform: scale(4);
+            opacity: 0;
+          }
+        }
+
+        @keyframes bounce {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-4px);
+          }
+        }
+
+        .cluster-marker {
+          background: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+          transition: all 0.3s ease;
+          animation: pulse 2s infinite;
+        }
+
+        .cluster-marker:hover {
+          transform: scale(1.1);
+          animation: none;
+        }
+
+        .cluster-marker.small {
+          width: 35px;
+          height: 35px;
+          border: 3px solid #28a745;
+          color: #28a745;
+        }
+
+        .cluster-marker.medium {
+          width: 45px;
+          height: 45px;
+          border: 4px solid #ffc107;
+          color: #ffc107;
+        }
+
+        .cluster-marker.large {
+          width: 55px;
+          height: 55px;
+          border: 5px solid #dc3545;
+          color: #dc3545;
+        }
+
+        @keyframes pulse {
+          0% {
+            box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4);
+          }
+          70% {
+            box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+          }
+          100% {
+            box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+          }
+        }
+
+        .popup-content {
+          padding: 12px;
+          min-width: 220px;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .leaflet-popup-content-wrapper {
+          border-radius: 8px;
+          padding: 0;
+        }
+
+        .leaflet-popup-tip {
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .status-badge {
+          display: inline-block;
+          padding: 4px 8px;
+          border-radius: 12px;
+          margin-bottom: 8px;
+          font-weight: bold;
+          font-size: 0.9em;
+        }
+
+        .status-badge.active {
+          background: #ffebe6;
+          color: #FF5733;
+        }
+
+        .status-badge.pending {
+          background: #e6f3ff;
+          color: #007BFF;
+        }
+
+        .status-badge.resolved {
+          background: #e6ffe6;
+          color: #28A745;
+        }
+
+        .status-badge.cancelled {
+          background: #f2f2f2;
+          color: #6C757D;
+        }
+
+        .message {
+          margin: 8px 0;
+          line-height: 1.4;
+        }
+
+        .timestamp {
+          font-size: 0.9em;
+          color: #666;
+          margin-top: 8px;
+        }
+
+        /* MarkerCluster Custom Styles */
+        .marker-cluster-small {
+            background-color: rgba(40, 167, 69, 0.6);
+        }
+        .marker-cluster-small div {
+            background-color: rgba(40, 167, 69, 0.8);
+        }
+
+        .marker-cluster-medium {
+            background-color: rgba(255, 193, 7, 0.6);
+        }
+        .marker-cluster-medium div {
+            background-color: rgba(255, 193, 7, 0.8);
+        }
+
+        .marker-cluster-large {
+            background-color: rgba(220, 53, 69, 0.6);
+        }
+        .marker-cluster-large div {
+            background-color: rgba(220, 53, 69, 0.8);
+        }
+
+        .marker-cluster {
+            background-clip: padding-box;
+            border-radius: 50%;
+        }
+
+        .marker-cluster div {
+            width: 30px;
+            height: 30px;
+            margin-left: 5px;
+            margin-top: 5px;
+            text-align: center;
+            border-radius: 50%;
+            font-size: 12px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .marker-cluster span {
+            line-height: 30px;
+        }
+      `}</style>
     </>
   );
 };
