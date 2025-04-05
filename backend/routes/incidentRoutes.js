@@ -33,6 +33,7 @@ router.post("/", incidentToken, upload.single("document"), generatePublicUrl, as
       documentUrl: req.fileUrl,  // Save the public URL
       userId: req.userId,
       category,
+      status:'Pending',
       otherCategoryMsg: otherCategory ? otherCategory : null,
       location: { latitude, longitude },
     });
@@ -47,6 +48,20 @@ router.post("/", incidentToken, upload.single("document"), generatePublicUrl, as
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+
+router.put('/status-change/:id' ,async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    console.log('status..',status)
+    const updated = await Incident.findByIdAndUpdate(id, { status }, { new: true });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update incident status' });
+  }
+});
+
 
 // 📌 GET: Fetch all incidents
 router.get("/", authenticateToken, isAdmin, async (req, res) => {

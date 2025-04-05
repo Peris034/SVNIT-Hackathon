@@ -7,6 +7,7 @@ const incidentSchema = new mongoose.Schema({
   message: { type: String, required: true },
   category: { type: String, required: true },
   otherCategoryMsg : {type:String, required:false},
+  status : {type:String,required:true},
   documentUrl: { type: String }, // Cloudinary URL for uploaded file
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   location: {
