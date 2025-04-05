@@ -10,6 +10,7 @@ import "leaflet.markercluster";
 import "./Map.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
+const GEO_API_KEY = import.meta.env.VITE_GEOLOCATION_API_KEY;
 const STATUS_OPTIONS = ["PENDING", "RESOLVED", "CANCELLED", "ACTIVE"];
 
 const createCustomIcon = (color) =>
@@ -43,35 +44,58 @@ const Map = () => {
   const getCityFromCoords = async (lat, lon) => {
     const key = `${lat},${lon}`;
     if (geocodeCache.current[key]) return geocodeCache.current[key];
-    try {
+  
+    const tryOpenCage = async () => {
       const response = await fetch(
-        `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=7fbe61397f1343579a768e1800ff125c&no_annotations=1&language=en`
+        `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${GEO_API_KEY}&no_annotations=1&language=en`
       );
-  
-      if (!response.ok) {
-        throw new Error(`Geocoding error: ${response.status}`);
-      }
-  
+      if (!response.ok) throw new Error("OpenCage failed");
       const data = await response.json();
       const components = data.results[0]?.components || {};
-  
-      // Prioritize known city fields
-      const city =
+      return (
         components.city ||
         components.town ||
         components.village ||
-        components.state_district || // Sometimes OpenCage puts cities here (especially in India)
-        components.state || // As a last resort
-        "Unknown";
+        components.state_district ||
+        components.state ||
+        "Unknown"
+      );
+    };
   
+    const tryNominatim = async () => {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10&addressdetails=1`,
+        { headers: { "User-Agent": "localhost/1.0" } }
+      );
+      if (!response.ok) throw new Error("Nominatim failed");
+      const data = await response.json();
+      const components = data.address || {};
+      return (
+        components.city ||
+        components.town ||
+        components.village ||
+        components.county ||
+        components.state ||
+        "Unknown"
+      );
+    };
+  
+    try {
+      const city = await tryOpenCage();
       geocodeCache.current[key] = city;
       return city;
-    } catch (error) {
-      console.error("Reverse geocoding failed:", error.message);
-      return "Unknown";
+    } catch (e1) {
+      try {
+        const city = await tryNominatim();
+        geocodeCache.current[key] = city;
+        return city;
+      } catch (e2) {
+        console.error("Both geocoding services failed:", e2.message);
+        return "Unknown";
+      }
     }
   };
-      
+        
   const fetchSosAlerts = async () => {
     try {
       const res = await fetch(`${API_URL}/sos/sos-alerts`, {
