@@ -1,136 +1,228 @@
 /* Navbar Styling */
 .navbar {
-    background: #222;
-    padding: 10px 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  }
-  
-  .navbar-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-  }
-  
-  /* Brand Styling */
-  .navbar-brand {
-    color: #fff;
-    font-size: 22px;
-    font-weight: bold;
-    text-decoration: none;
-  }
-  
-  /* Navigation Links */
+  background: #222;
+  padding: 10px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Brand Styling */
+.navbar-brand {
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* Navigation Links */
+.navbar-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  color: #fff;
+  font-size: 16px;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #f44336;
+}
+
+/* Mobile Menu Toggle */
+.hamburger-menu {
+  display: none;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.hamburger-bar {
+  width: 30px;
+  height: 3px;
+  background: #fff;
+  transition: transform 0.3s ease;
+}
+
+/* Dropdown for Mobile */
+.dropdown-menu-mobile {
+  display: flex;
+  flex-direction: column;
+  background: #333;
+  border-radius: 6px;
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 200px;
+  z-index: 10;
+}
+
+.dropdown-menu-mobile .dropdown-item {
+  padding: 10px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.dropdown-menu-mobile .dropdown-item:hover {
+  background: #f44336;
+}
+ul {
+  list-style-type: none;
+  padding: 0; /* optional: removes default indentation */
+  margin: 0;  /* optional: removes default margin */
+}
+li{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* User Section */
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+.user-dropdown-container {
+  position: relative;
+}
+
+.user-dropdown {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.user-dropdown:hover {
+  background: rgba(158, 187, 192, 0.226);
+}
+
+.user-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f44336;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  transition: transform 0.3s ease;
+}
+
+.user-icon:hover {
+  transform: scale(1.1);
+}
+
+.username {
+  font-weight: bold;
+  margin-left: 10px;
+  font-size: 16px;
+  color: #fff;
+}
+
+.dropdown-menu {
+  background: #333;
+  border-radius: 6px;
+  position: absolute;
+    top: 122%;
+    right: -5%;
+  display: none;
+  z-index: 1000;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-item {
+  color: #fff;
+  /* padding: 10px 15px; */
+  transition: background 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background: #f44336;
+}
+
+.logout-btn {
+  color: #f44336;
+  font-weight: bold;
+  padding: 10px 15px;
+  border-radius: 6px;
+}
+
+.logout-btn:hover {
+  background: #f44336;
+  color: #fff;
+}
+
+.login-btn {
+  color: #fff;
+  font-size: 16px;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+.login-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Media Queries */
+@media (max-width: 768px) {
   .navbar-links {
+    display: none;
+  }
+
+  .hamburger-menu {
     display: flex;
-    gap: 20px;
   }
-  
-  .nav-link {
-    color: #fff;
-    font-size: 16px;
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-  
-  .nav-link:hover {
-    color: #f44336;
-  }
-  
-  /* User Section */
+
   .navbar-user {
-    display: flex;
-    align-items: center;
-    gap: 20px;
+    display: none;
   }
-  
-  /* User Dropdown */
-  .user-dropdown {
-    display: flex;
-    align-items: center;
-    background: transparent;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 5px;
-    transition: background 0.3s;
-  }
-  
-  .user-dropdown:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-  
-  /* User Icon */
-  .user-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #f44336;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid #fff;
-    transition: transform 0.3s ease;
-  }
-  
-  .user-icon:hover {
-    transform: scale(1.1);
-  }
-  
-  /* Username */
-  .username {
-    font-weight: bold;
-    margin-left: 10px;
-    font-size: 16px;
-    color: #fff;
-  }
-  
-  /* Dropdown Menu */
-  .dropdown-menu {
-    background: #222;
-    border: 1px solid #444;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    min-width: 150px;
-  }
-  
-  .profile-item {
-    color: #fff;
-    font-weight: 500;
-  }
-  
-  .dropdown-item {
-    color: #fff;
-    transition: background 0.3s;
-    padding: 10px 15px;
-  }
-  
-  .dropdown-item:hover {
-    background: #f44336;
-  }
-  
-  /* Logout Button */
-  .logout-btn {
-    color: #f44336;
-    font-weight: bold;
-  }
-  
-  .logout-btn:hover {
-    background: #f44336;
-    color: #fff;
-  }
-  
-  /* Login Button */
-  .login-btn {
-    color: #fff;
-    font-size: 16px;
-    text-decoration: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    transition: background 0.3s ease;
-  }
-  
-  .login-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-  
+}
+/* From Uiverse.io by adamgiebl */ 
+.logOut {
+  position: relative;
+  display: inline-block;
+  margin: 15px;
+  padding: 10px 10px;
+  text-align: center;
+  font-size: 18px;
+  letter-spacing: 1px;
+  text-decoration: none;
+  color: #725AC1;
+  background: transparent;
+  cursor: pointer;
+  transition: ease-out 0.5s;
+  border: 2px solid #725AC1;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 0 #725AC1;
+}
+
+.logOut:hover {
+  color: white;
+  box-shadow: inset 0 -100px 0 0 #725AC1;
+}
+
+.logOut:active {
+  transform: scale(0.9);
+}
