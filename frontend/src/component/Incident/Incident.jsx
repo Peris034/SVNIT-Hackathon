@@ -209,7 +209,7 @@ const Incident = () => {
 
           <div className="form-group">
             <label>Upload Supporting Document</label>
-            <input type="file" name="document" onChange={handleFileChange} />
+            <input type="file" accept="image/*" name="document" onChange={handleFileChange} />
           </div>
 
           <button type="submit" className="submit-btn" disabled={loading}>
