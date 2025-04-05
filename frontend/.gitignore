@@ -11,6 +11,10 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+src/tr.jsx
+src/tr1.jsx
+src/tr2.jsx
 
 # Editor directories and files
 .vscode/*
