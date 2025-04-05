@@ -6,7 +6,7 @@ const logSchema = new mongoose.Schema({
     role: { type: String, required: true },      // ✅ Use String instead of mongoose.Schema.Types.role
     loginTime: { 
         type: String, 
-        default: () => new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }) 
+        default: () => new Date()
     } // ✅ Store time in IST
 });
 
