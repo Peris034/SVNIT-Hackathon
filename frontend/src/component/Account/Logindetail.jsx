@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -46,13 +47,16 @@ export default function LoginDetail() {
       });
 
       const data = await response.json();
+      console.log("first", data);
       if (response.ok) {
+        toast.success(data.message)
         setUser((prev) => ({ ...prev, email: data.email }));
         localStorage.setItem("token", data.token);
         setMessage("Email updated successfully!");
         setShowEmailDialog(false);
         setNewEmail("");
       } else {
+        toast.error(data.message)
         setMessage(data.message);
       }
     } catch (error) {
@@ -74,12 +78,14 @@ export default function LoginDetail() {
       const data = await response.json();
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        setMessage("Password updated successfully!");
+        toast.success(data.message)
+        // setMessage("Password updated successfully!");
         setShowPasswordDialog(false);
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
       } else {
+        toast.error(data.message)
         setMessage(data.message);
       }
     } catch (error) {
@@ -97,7 +103,7 @@ export default function LoginDetail() {
       <button onClick={() => setShowEmailDialog(true)} style={styles.button}>Change Email</button>
       <button onClick={() => setShowPasswordDialog(true)} style={styles.button}>Change Password</button>
 
-      {message && <p style={styles.successMessage}>{message}</p>}
+      {/* {message && <p style={styles.successMessage}>{message}</p>} */}
 
       {/* Email Change Popup */}
       {showEmailDialog && (
@@ -111,8 +117,8 @@ export default function LoginDetail() {
               onChange={(e) => setNewEmail(e.target.value)}
               style={styles.input}
             />
+            <button onClick={() => setShowEmailDialog(false)} style={styles.button}>Cancel</button>
             <button onClick={handleEmailUpdate} style={styles.button}>Save</button>
-            <button onClick={() => setShowEmailDialog(false)} style={styles.cancel}>Cancel</button>
           </div>
         </div>
       )}
@@ -143,8 +149,8 @@ export default function LoginDetail() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               style={styles.input}
             />
+            <button onClick={() => setShowPasswordDialog(false)} style={styles.button}>Cancel</button>
             <button onClick={handlePasswordUpdate} style={styles.button}>Save</button>
-            <button onClick={() => setShowPasswordDialog(false)} style={styles.cancel}>Cancel</button>
           </div>
         </div>
       )}
