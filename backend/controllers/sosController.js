@@ -94,12 +94,20 @@ export const getAllSos = async (req, res) => {
                 }
             }
 
-            // ✅ Admin can access ALL SOS alerts
-            const sosRecords = await Sos.find();
+            // ✅ Admin can access ALL SOS alerts with populated user full name
+            const sosRecords = await Sos.find().populate({
+                path: 'userId',
+                select: 'fullName email' // You can include more fields as needed
+            });
+
             return res.status(200).json(sosRecords);
         } else {
             // ✅ Normal users can only see their own SOS alerts
-            const sosRecords = await Sos.find({ fcmToken: req.user.fcmToken });
+            const sosRecords = await Sos.find({ fcmToken: req.user.fcmToken }).populate({
+                path: 'userId',
+                select: 'fullName'
+            });
+
             return res.status(200).json(sosRecords);
         }
     } catch (error) {
