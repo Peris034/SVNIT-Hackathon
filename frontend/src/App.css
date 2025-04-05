@@ -1,5 +1,10 @@
 @import "tailwindcss";
 /* Navbar Styling */
+@theme {
+  --breakpoint-xs: 25rem;
+  --breakpoint-2xl: 100rem;
+  --breakpoint-3xl: 120rem;
+}
 .navbar {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   padding: 12px 25px;

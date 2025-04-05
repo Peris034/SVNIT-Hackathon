@@ -42,13 +42,16 @@ const PostList = () => {
     if (error) return <p className="error">{error}</p>;
 
     return (
-        <div>
-            <h2>Community Posts</h2>
+        <div >
+            <h2 className="mt-10 text-2xl text-center">Community Posts</h2>
+            <div className="flex flex-wrap justify-center gap-10 mt-10">
             {posts.length > 0 ? (
                 posts.map((post) => <PostCard key={post._id} post={post} userId={userId} />)
             ) : (
                 <p>No posts available.</p>
             )}
+                
+            </div>
         </div>
     );
 };

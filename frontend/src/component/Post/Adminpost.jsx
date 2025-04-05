@@ -58,18 +58,18 @@ const Adminpost = () => {
     return (
         <>
             <Navbar />
-            <div className="max-w-3xl mx-auto p-4">
+            <div className="max-w-4xl mx-auto p-4">
                 {/* ✅ Tabs for switching views */}
                 <div className="flex justify-center gap-2 mb-4">
                     <button
                         onClick={() => setActiveTab("user")}
-                        className={`px-4 py-2 rounded-md ${activeTab === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"}`}
+                        className={`px-4 py-2 rounded-md ${activeTab === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700 cursor-pointer"}`}
                     >
                         👤 User View
                     </button>
                     <button
                         onClick={() => setActiveTab("admin")}
-                        className={`px-4 py-2 rounded-md ${activeTab === "admin" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"}`}
+                        className={`px-4 py-2 rounded-md ${activeTab === "admin" ? "bg-blue-500 text-white" : "bg-gray-200 cursor-pointer text-gray-700"}`}
                     >
                         🛠 Admin View
                     </button>
@@ -82,7 +82,7 @@ const Adminpost = () => {
                 {activeTab === "user" && (
                     <div>
                         <button
-                            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+                            className="w-full cursor-pointer bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
                             onClick={() => setShowCreatePost(true)}
                         >
                             ➕ Create Post
@@ -94,13 +94,13 @@ const Adminpost = () => {
 
                 {/* ✅ Admin View (Pending Posts Moderation) */}
                 {activeTab === "admin" && (
-                    <div>
+                    <div className="flex flex-col gap-10">
                         <h2 className="text-center text-xl font-bold">📢 Pending Posts</h2>
-                        {pendingPosts.length === 0 ? (
+                        <div className="flex justify-center gap-10">{pendingPosts.length === 0 ? (
                             <p className="text-center text-gray-500">✅ No pending posts</p>
                         ) : (
                             pendingPosts.map((post) => (
-                                <div key={post._id} className="border p-3 rounded-md bg-gray-100 shadow-sm mt-3">
+                                <div key={post._id} className="border max-w-64 flex flex-col  justify-between items-center p-3 rounded-md bg-gray-100 shadow-sm mt-3">
                                     <h3 className="font-semibold">{post.title}</h3>
                                     <p>{post.content}</p>
                                     {post.image && (
@@ -114,13 +114,13 @@ const Adminpost = () => {
                                     <div className="mt-3 flex gap-3">
                                         <button
                                             onClick={() => handleApproval(post._id, "approved")}
-                                            className="bg-green-500 text-white px-3 py-1 rounded-md"
+                                            className="bg-green-500 cursor-pointer text-white px-3 py-1 rounded-md"
                                         >
                                             ✅ Approve
                                         </button>
                                         <button
                                             onClick={() => handleApproval(post._id, "rejected")}
-                                            className="bg-red-500 text-white px-3 py-1 rounded-md"
+                                            className="cursor-pointer bg-red-500 text-white px-3 py-1 rounded-md"
                                         >
                                             ❌ Reject
                                         </button>
@@ -128,6 +128,8 @@ const Adminpost = () => {
                                 </div>
                             ))
                         )}
+                        </div>
+                        
                     </div>
                 )}
             </div>

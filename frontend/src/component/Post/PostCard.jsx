@@ -119,11 +119,11 @@ const PostCard = ({ post, userId, onDelete }) => {
     };
 
     return (
-        <div className="bg-white shadow-md rounded-lg p-4 mb-4 w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl">
+        <div className="bg-white shadow-md rounded-lg p-4 mb-4 w-5xl xs:w-64">
 
             {/* ✅ Display the post image with controlled size */}
             {post.image && (
-                <div className="w-full h-[10px] overflow-hidden rounded-md mb-2 flex justify-center items-center bg-gray-100">
+                <div className="w-full h-64 overflow-hidden rounded-md mb-2 flex justify-center items-center bg-gray-100">
                     <img
                         src={post.image.replace(/\s+/g, "%20")} // Handle spaces in URL
                         alt="Post"
