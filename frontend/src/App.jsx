@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { toast, ToastContainer } from "react-toastify";
@@ -23,15 +22,6 @@ export default function App() {
     notificationService.requestPermission().then((token) => {
       // if (token) console.log("Token received:", token);
     });
-=======
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import React from 'react'
-function App() {
-  const [count, setCount] = useState(0)
->>>>>>> 3c40666 (Dependenciesy added)
 
     notificationService.onMessageListener((payload) => {
       const { title, body } = payload.notification;
@@ -40,7 +30,6 @@ function App() {
   }, []);
   
   return (
-<<<<<<< HEAD
     <Router>
       <Routes>
         <Route path="/" element={<Signup />} />
@@ -63,15 +52,3 @@ function App() {
     </Router>
   );
 }
-=======
-    <>
-      <div className='flex flex-col justify- flex col  fl justfi'>
-      <p className='text-6xl flex bg-red-200'>Hello world</p>
-
-      </div>
-    </>
-  )
-}
-
-export default App
->>>>>>> 3c40666 (Dependenciesy added)
