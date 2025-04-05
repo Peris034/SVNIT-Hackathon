@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { toast, ToastContainer } from "react-toastify";
-// import Dashboard from "./component/Dashboard/Dashboard";
-// import Account from "./component/Account/Account";
-// import Logindetail from "./component/Account/Logindetail";
+import Dashboard from "./component/Dashboard/Dashboard";
+import Account from "./component/Account/Account";
+import Logindetail from "./component/Account/Logindetail";
 import Signup from "./component/Auth/Signup";
 // import Users from "./component/Users/Users";
 // import Map from "./component/Map/Map";
@@ -33,8 +33,8 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Signup />} />
-        {/* <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/users" element={<Users />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        {/* <Route path="/users" element={<Users />} />
         <Route path="/map" element={<Map />} />
         <Route path="/incident" element={<Incident />} />
         <Route path="/incidents" element={<Incidents />} />
@@ -42,11 +42,11 @@ export default function App() {
         <Route path="/emergency" element={<Emergency />} />
         <Route path="/news" element={<NewsFeed />} />
         <Route path="/post" element={<Post />} />
-        <Route path="/adminpost" element={<Adminpost />} />
+        <Route path="/adminpost" element={<Adminpost />} /> */}
         <Route path="/account" element={<Account />}>
           <Route index element={<Navigate to="logindetail" />} />
           <Route path="logindetail" element={<Logindetail />} />
-        </Route> */}
+        </Route>
       </Routes>
       <ToastContainer />
     </Router>
