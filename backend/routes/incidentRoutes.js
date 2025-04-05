@@ -64,10 +64,19 @@ router.put('/status-change/:id' ,async (req, res) => {
 
 
 // 📌 GET: Fetch all incidents
-router.get("/", authenticateToken, isAdmin, async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
-    const incidents = await Incident.find().exec();
-    if (!incidents) {
+    let incidents;
+
+    if (req.user.role === "admin") {
+      // Admin gets all incidents
+      incidents = await Incident.find().exec();
+    } else {
+      // User gets only their own incidents
+      incidents = await Incident.find({ user: req.user._id }).exec();
+    }
+
+    if (!incidents || incidents.length === 0) {
       return res.status(404).json({ success: false, message: "No incidents found" });
     }
 

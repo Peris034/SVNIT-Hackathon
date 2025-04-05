@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../Navbar";
-// import { ToastContainer, toast } from "react-toastify";
 import { toast } from 'react-hot-toast';
-
-import "react-toastify/dist/ReactToastify.css";
+// import "./incident.css"; // Optional: include styles for modal
 
 const Incident = () => {
   const [formData, setFormData] = useState({
@@ -17,22 +15,18 @@ const Incident = () => {
     otherCategory: "",
     location: { latitude: null, longitude: null },
   });
-  const [loading, setLoading] = useState(false);
 
-  // Predefined categories
+  const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [incidentHistory, setIncidentHistory] = useState([]);
+
   const categories = [
-    "Harassment",
-    "Fire",
-    "Violence",
-    "Medical Emergency",
-    "Theft",
-    "Natural Disaster",
-    "Traffic Accident",
-    "Other"
+    "Harassment", "Fire", "Violence", "Medical Emergency",
+    "Theft", "Natural Disaster", "Traffic Accident", "Other"
   ];
 
+  // Fetch location
   useEffect(() => {
-    // Fetch user's location
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setFormData((prev) => ({
@@ -43,19 +37,51 @@ const Incident = () => {
           },
         }));
       },
-      (error) => {
-        toast.error("Location access denied. Enable GPS and refresh.");
-      }
+      () => toast.error("Location access denied. Enable GPS and refresh.")
     );
+  }, []);
+
+  // Fetch user's incident history
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/incident`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          setIncidentHistory(data.incidents || []);
+        } else {
+          toast.error("Failed to load history");
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Error fetching incident history");
+      }
+    };
+
+    fetchHistory();
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    
-    // Reset otherCategory when category changes to something other than "Other"
-    if (name === "category" && value !== "Other") {
-      setFormData(prev => ({ ...prev, otherCategory: "" }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === "category" && value !== "Other" && { otherCategory: "" }),
+    }));
+  };
+
+  const handlePhoneChange = (e) => {
+    const value = e.target.value;
+    if (value === '' || (/^\d+$/.test(value) && value.length <= 10)) {
+      setFormData((prev) => ({ ...prev, number: value }));
     }
   };
 
@@ -64,30 +90,21 @@ const Incident = () => {
     setFormData((prev) => ({ ...prev, document: file }));
   };
 
-  const handlePhoneChange = (e) => {
-    const value = e.target.value;
-    // Only allow numbers and limit to 10 digits
-    if (value === '' || (/^\d+$/.test(value) && value.length <= 10)) {
-      setFormData(prev => ({ ...prev, number: value }));
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
 
     if (!formData.location.latitude || !formData.location.longitude) {
       toast.error("Location is required. Please enable GPS.");
       return;
     }
 
-    if (!localStorage.getItem("token")) {
+    const token = localStorage.getItem("token");
+    if (!token) {
       toast.error("User authentication required!");
       return;
     }
 
     const formDataToSend = new FormData();
-
     Object.keys(formData).forEach((key) => {
       if (key === "location") {
         formDataToSend.append("latitude", formData.location.latitude);
@@ -101,32 +118,27 @@ const Incident = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/incident`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/incident`, {
         method: "POST",
         body: formDataToSend,
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
+      const result = await res.json();
       setLoading(false);
-      if (response.ok) {
-        toast.success("Incident reported successfully!");
 
+      if (res.ok) {
+        toast.success("Incident reported successfully!");
         setFormData({
-          name: "",
-          number: "",
-          address: "",
-          title: "",
-          message: "",
-          document: null,
-          category: "",
-          otherCategory: "",
-          location: { latitude: null, longitude: null },
+          name: "", number: "", address: "", title: "", message: "",
+          document: null, category: "", otherCategory: "", location: formData.location
         });
+        setIsModalOpen(false); // close modal
+        setIncidentHistory((prev) => [result.incident, ...prev]); // update history
       } else {
-        const errorResponse = await response.json();
-        toast.error(errorResponse.message || "Error submitting form");
+        toast.error(result.message || "Error submitting form");
       }
     } catch (error) {
       setLoading(false);
@@ -137,87 +149,125 @@ const Incident = () => {
   return (
     <>
       <Navbar />
-      <div className="incident-container">
-        <h1>Report an Incident</h1>
-        <form className="incident-form" onSubmit={handleSubmit}>
 
-          {formData.category === "Other" && (
-            <div className="form-group animate-fade-in">
-              <label>Specify Category</label>
-              <input
-                type="text"
-                name="otherCategory"
-                value={formData.otherCategory}
-                onChange={handleChange}
-                placeholder="Please specify the incident category"
-                required
-                className="other-category-input"
-              />
+      <div className="incident-container">
+        <h1>Incident Dashboard</h1>
+
+        <button className="open-form-btn" onClick={() => setIsModalOpen(true)}>
+          Report a New Incident
+        </button>
+
+        {/* MODAL FORM */}
+        {isModalOpen && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <span className="close-btn" onClick={() => setIsModalOpen(false)}>&times;</span>
+              <h2>Report an Incident</h2>
+              <form className="incident-form" onSubmit={handleSubmit}>
+                {formData.category === "Other" && (
+                  <div className="form-group">
+                    <label>Specify Category</label>
+                    <input type="text" name="otherCategory" value={formData.otherCategory}
+                      onChange={handleChange} placeholder="Please specify" required />
+                  </div>
+                )}
+
+                <div className="form-group">
+                  <label>Name</label>
+                  <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+                </div>
+
+                <div className="form-group">
+                  <label>Phone Number</label>
+                  <input type="tel" name="number" value={formData.number}
+                    onChange={handlePhoneChange} required pattern="[0-9]{10}" maxLength="10" />
+                </div>
+
+                <div className="form-group">
+                  <label>Incident Category</label>
+                  <select name="category" value={formData.category}
+                    onChange={handleChange} required>
+                    <option value="">Select category</option>
+                    {categories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Address</label>
+                  <input type="text" name="address" value={formData.address} onChange={handleChange} required />
+                </div>
+
+                <div className="form-group">
+                  <label>Message</label>
+                  <textarea name="message" value={formData.message} onChange={handleChange} required />
+                </div>
+
+                <div className="form-group">
+                  <label>Upload Document</label>
+                  <input type="file" accept="image/*" name="document" onChange={handleFileChange} />
+                </div>
+
+                <button type="submit" disabled={loading}>
+                  {loading ? "Submitting..." : "Submit"}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* INCIDENT HISTORY TABLE */}
+        <div className="incident-history">
+          <h2>Previous Incidents</h2>
+
+          {incidentHistory.length === 0 ? (
+            <p>No past incidents reported.</p>
+          ) : (
+            <div className="table-wrapper">
+              <table className="incident-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Category</th>
+                    <th>Message</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Document</th>
+                    <th>Reported At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {incidentHistory.map((incident, idx) => (
+                    <tr key={idx}>
+                      <td>{idx + 1}</td>
+                      <td>{incident.otherCategoryMsg || incident.category}</td>
+                      <td>{incident.message}</td>
+                      <td>{incident.address}</td>
+                      <td>{incident.number}</td>
+                      <td>{incident.status}</td>
+                      <td>
+                        {incident.documentUrl ? (
+                          <a
+                            href={incident.documentUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            View
+                          </a>
+                        ) : (
+                          "N/A"
+                        )}
+                      </td>
+                      <td>{incident.createdAt}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
+        </div>
 
-          <div className="form-group">
-            <label>Name</label>
-            <input type="text" name="name" value={formData.name} onChange={handleChange} required />
-          </div>
-
-          <div className="form-group">
-            <label>Phone Number</label>
-            <input 
-              type="tel"
-              name="number"
-              value={formData.number}
-              onChange={handlePhoneChange}
-              required
-              pattern="[0-9]{10}"
-              maxLength="10"
-              title="Please enter a valid 10-digit phone number"
-              className={`phone-input ${formData.number.length > 0 && formData.number.length < 10 ? 'invalid' : ''}`}
-            />
-            {formData.number.length > 0 && formData.number.length < 10 && (
-              <span className="error-message">Phone number must be 10 digits</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label>Incident Category</label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              className="category-select"
-            >
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>Address</label>
-            <input type="text" name="address" value={formData.address} onChange={handleChange} required />
-          </div>
-
-          <div className="form-group">
-            <label>Message</label>
-            <textarea name="message" value={formData.message} onChange={handleChange} required />
-          </div>
-
-          <div className="form-group">
-            <label>Upload Supporting Document</label>
-            <input type="file" accept="image/*" name="document" onChange={handleFileChange} />
-          </div>
-
-          <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? "Submitting..." : "Submit Incident"}
-          </button>
-        </form>
       </div>
-
       <style>{`
         .incident-container {
           max-width: 600px;

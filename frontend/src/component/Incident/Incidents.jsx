@@ -170,8 +170,6 @@ const Incidents = () => {
         }
     };
 
-
-
     const handleStatusFilter = (e) => {
         const value = e.target.value;
         console.log('e..target..value', value.toUpperCase())
