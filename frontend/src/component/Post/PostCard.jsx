@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 const PostCard = ({ post, userId, onDelete }) => {
     const [likes, setLikes] = useState(post.likes.length);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar";
 import CreatePost from "./CreatePost";
 import PostList from "./PostList";
@@ -63,13 +63,13 @@ const Adminpost = () => {
                 <div className="flex justify-center gap-2 mb-4">
                     <button
                         onClick={() => setActiveTab("user")}
-                        className={`px-4 py-2 rounded-md ${activeTab === "user" ? "bg-gray-200 text-gray-700" : "bg-blue-500 text-white"}`}
+                        className={`px-4 py-2 rounded-md ${activeTab === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"}`}
                     >
                         👤 User View
                     </button>
                     <button
                         onClick={() => setActiveTab("admin")}
-                        className={`px-4 py-2 rounded-md ${activeTab === "admin" ? "bg-gray-200 text-gray-700" : "bg-blue-500 text-white"}`}
+                        className={`px-4 py-2 rounded-md ${activeTab === "admin" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"}`}
                     >
                         🛠 Admin View
                     </button>
