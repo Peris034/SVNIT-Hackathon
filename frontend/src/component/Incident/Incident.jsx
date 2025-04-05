@@ -150,10 +150,10 @@ const Incident = () => {
     <>
       <Navbar />
 
-      <div className="incident-container">
+      <div className="incident-container flex flex-col justify-center">
         <h1>Incident Dashboard</h1>
 
-        <button className="open-form-btn" onClick={() => setIsModalOpen(true)}>
+        <button className="open-form-btn btn cursor-pointer " onClick={() => setIsModalOpen(true)}>
           Report a New Incident
         </button>
 
@@ -161,8 +161,8 @@ const Incident = () => {
         {isModalOpen && (
           <div className="modal-overlay">
             <div className="modal-content">
-              <span className="close-btn" onClick={() => setIsModalOpen(false)}>&times;</span>
-              <h2>Report an Incident</h2>
+              {/* <span className="close-btn" onClick={() => setIsModalOpen(false)}>&times;</span> */}
+              <h2 className="text-center m-5">Report an Incident</h2>
               <form className="incident-form" onSubmit={handleSubmit}>
                 {formData.category === "Other" && (
                   <div className="form-group">
@@ -217,7 +217,7 @@ const Incident = () => {
 
         {/* INCIDENT HISTORY TABLE */}
         <div className="incident-history">
-          <h2>Previous Incidents</h2>
+          <h2 className="text-center m-5">Previous Incidents</h2>
 
           {incidentHistory.length === 0 ? (
             <p>No past incidents reported.</p>
@@ -270,14 +270,29 @@ const Incident = () => {
       </div>
       <style>{`
         .incident-container {
-          max-width: 600px;
+          max-width: 900px;
           margin: 2rem auto;
           padding: 1.5rem;
           background: white;
           border-radius: 8px;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
-
+        .btn{
+          background-color: #4a63d0;
+  color: white;
+  border:
+none;
+  cursor: pointer;
+  transition:
+background-color 0.3s;
+padding:
+0.5rem;
+  font-size: 1rem;
+  border:
+1px solid #ddd;
+  border-radius:
+4px;
+        }
         h1 {
           font-size: 1.5rem;
           color: #333;
