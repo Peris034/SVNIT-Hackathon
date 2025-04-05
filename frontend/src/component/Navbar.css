@@ -74,12 +74,16 @@
 .dropdown-menu-mobile .dropdown-item:hover {
   background: #f44336;
 }
+
 ul {
   list-style-type: none;
-  padding: 0; /* optional: removes default indentation */
-  margin: 0;  /* optional: removes default margin */
+  padding: 0;
+  /* optional: removes default indentation */
+  margin: 0;
+  /* optional: removes default margin */
 }
-li{
+
+li {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -140,8 +144,8 @@ li{
   background: #333;
   border-radius: 6px;
   position: absolute;
-    top: 122%;
-    right: -5%;cand
+  top: 122%;
+  right: -5%;
   display: none;
   z-index: 1000;
 }
@@ -199,7 +203,8 @@ li{
     display: none;
   }
 }
-/* From Uiverse.io by adamgiebl */ 
+
+/* From Uiverse.io by adamgiebl */
 .logOut {
   position: relative;
   display: inline-block;

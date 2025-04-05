@@ -5,7 +5,7 @@ import Dashboard from "./component/Dashboard/Dashboard";
 import Account from "./component/Account/Account";
 import Logindetail from "./component/Account/Logindetail";
 import Signup from "./component/Auth/Signup";
-// import Users from "./component/Users/Users";
+import Users from "./component/Users/Users";
 import Map from "./component/Map/Map";
 import Incident from "./component/Incident/Incident";
 import Incidents from "./component/Incident/Incidents";
@@ -34,7 +34,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        {/* <Route path="/users" element={<Users />} /> */}
+        <Route path="/users" element={<Users />} />
         <Route path="/map" element={<Map />} />
         <Route path="/incident" element={<Incident />} />
         <Route path="/incidents" element={<Incidents />} />

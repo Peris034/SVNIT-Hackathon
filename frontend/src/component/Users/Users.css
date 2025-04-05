@@ -1,0 +1,179 @@
+/* === General Styles === */
+.users-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.users-container h1 {
+    color: #333;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.users-container h1::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 3px;
+    background: #4CAF50;
+    margin: 10px auto;
+}
+
+/* === Table Styling === */
+.table-wrapper {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    overflow: hidden;
+}
+
+.users-table thead {
+    background: #f8f9fa;
+}
+
+.users-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.users-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+.users-table tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+.users-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.users-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ✅ Highlight Admin Role */
+.admin-role {
+    color: #2196F3;
+    font-weight: 600;
+}
+
+/* No Data Message */
+.no-data {
+    text-align: center;
+    padding: 2rem !important;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* === Admin Label === */
+.admin-tag {
+    background: #4CAF50;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* === Delete Button Styling === */
+.delete-btn {
+    background: #ff4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.delete-btn:hover {
+    background: #cc0000;
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+    .users-container {
+        padding: 1rem;
+    }
+
+    .users-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .users-table th,
+    .users-table td {
+        padding: 0.75rem;
+    }
+}
+
+/* Add these animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Update your Users component to include these new features */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.search-box {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    width: 300px;
+    font-size: 0.9rem;
+}
+
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-active {
+    background-color: #4CAF50;
+}
+
+.status-inactive {
+    background-color: #ff4444;
+}
