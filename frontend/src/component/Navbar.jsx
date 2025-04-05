@@ -54,7 +54,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="container-fluid navbar-content">
-        <Link className="navbar-brand" to="/">CORONA</Link>
+        <Link className="navbar-brand" to="/">Virus Rovers</Link>
 
         {/* Mobile Menu Toggle */}
         <div className="hamburger-menu" onClick={() => setMenuOpen(!menuOpen)}>

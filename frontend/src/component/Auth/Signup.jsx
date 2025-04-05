@@ -181,7 +181,9 @@ const Signup = () => {
         body: JSON.stringify(payload)
       });
       const data = await response.json();
+      
       if (response.ok) {
+        toast.success(data.message);
         if (!isSignup) {
           localStorage.setItem('token', data.token);
           const decodedToken = JSON.parse(atob(data.token.split('.')[1]));
@@ -192,7 +194,7 @@ const Signup = () => {
           // navigate('/account/logindetail')
           setIsSignup(false); // Switch to login page after signup
         }
-        toast.success("Signup successful!");
+        // toast.success("Signup successful!");
       } else {
         toast.error(data.message)
       }
