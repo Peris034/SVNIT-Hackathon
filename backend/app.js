@@ -4,11 +4,11 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-// import emergencyContactRoutes from "./routes/emergencyContactRoutes.js";
+import emergencyContactRoutes from "./routes/emergencyContactRoutes.js";
 // import sosAlertRoutes from "./routes/sosAlertRoutes.js";
 import sosRoutes from "./routes/sosRoutes.js";
 // import postRoutes from "./routes/postRoutes.js"
-// import incidentRoutes from "./routes/incidentRoutes.js"; // ✅ Added incident routes
+import incidentRoutes from "./routes/incidentRoutes.js"; // ✅ Added incident routes
 
 dotenv.config();
 connectDB();
@@ -19,10 +19,10 @@ app.use(cors({ origin: "*" }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-// app.use("/api/emergency-contacts", emergencyContactRoutes);
+app.use("/api/emergency-contacts", emergencyContactRoutes);
 // app.use("/api/sos-alerts", sosAlertRoutes);
 app.use("/api/sos", sosRoutes);
-// app.use("/api/incident", incidentRoutes); // ✅ Incident routes
+app.use("/api/incident", incidentRoutes); // ✅ Incident routes
 // app.use("/api/posts", postRoutes); // ✅ Post routes
 
 // Error Handling

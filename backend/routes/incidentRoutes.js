@@ -1,0 +1,61 @@
+import express from "express";
+import { upload, generatePublicUrl } from "../middlewares/multer.js";
+import Incident from "../models/Incident.js";
+import { incidentToken, authenticateToken, isAdmin } from "../middlewares/authMiddleware.js";
+
+const router = express.Router();
+
+// 📌 POST: Submit an incident
+router.post("/", incidentToken, upload.single("document"), generatePublicUrl, async (req, res) => {
+  try {
+    // console.log("Request Body:", req.body);
+    // console.log("User ID from token:", req.userId);
+    // console.log("File Uploaded:", req.file);
+    // console.log("Public File URL:", req.fileUrl);  // The public URL from Cloudinary
+  
+    const { name, number, address, message, latitude, longitude, category , otherCategory} = req.body;
+  
+    if (!latitude || !longitude) {
+      return res.status(400).json({ success: false, message: "Location data is required" });
+    }
+  
+    if (!req.userId) {
+      return res.status(400).json({ success: false, message: "User authentication failed" });
+    }
+  
+    const newIncident = new Incident({
+      name,
+      number,
+      address,
+      message,
+      documentUrl: req.fileUrl,  // Save the public URL
+      userId: req.userId,
+      category,
+      otherCategoryMsg: otherCategory ? otherCategory : null,
+      location: { latitude, longitude },
+    });
+  
+    await newIncident.save();
+    res.status(201).json({ success: true, message: "Incident reported successfully!" });
+  } catch (error) {
+    console.error("Error saving incident:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// 📌 GET: Fetch all incidents
+router.get("/", authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const incidents = await Incident.find().exec();
+    if (!incidents) {
+      return res.status(404).json({ success: false, message: "No incidents found" });
+    }
+
+    res.status(200).json({ success: true, incidents });
+  } catch (error) {
+    console.error("Error fetching incidents:", error);
+    res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+});
+
+export default router;
