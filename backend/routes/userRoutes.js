@@ -12,11 +12,8 @@ router.get("/logindetail", authenticateToken, async (req, res) => {
 
 // 📌 Update Email
 router.put("/update-email", authenticateToken, async (req, res) => {
+    try {
     const { newEmail } = req.body;
-
-    if (!newEmail) {
-        return res.status(400).json({ message: "New email is required" });
-    }
     // Email validation regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(newEmail)) {
@@ -25,16 +22,20 @@ router.put("/update-email", authenticateToken, async (req, res) => {
     if (!req.user) {
         return res.status(401).json({ message: "Unauthorized - No user found" });
     }
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    if (newEmail == user.email) {
+        return res.status(404).json({ message: "Enter new email" });
+    }
+    const existingEmail = await User.findOne({ email: newEmail });
+    if (existingEmail) {
+            return res.status(400).json({ message: "This is email belongs other user" });
+    }
 
-    try {
         // Find user in the database
-        const user = await User.findById(req.user.id);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        if (newEmail == user.email) {
-            return res.status(404).json({ message: "Enter new email" });
-        }
         user.email = newEmail;
         await user.save();
         const generateToken = (user) => {
