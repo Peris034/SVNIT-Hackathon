@@ -1,6 +1,7 @@
 import Sos from "../models/Sos.js";
 import User from "../models/User.js";
 import admin, { sendNotification, sendNotificationToMultiple } from "../config/firebaseAdmin.js";
+import { statusUpdateMailSender } from "./mailSender.js";
 
 export const triggerSos = async (req, res) => {
     try {
@@ -70,6 +71,9 @@ export const updateSosStatus = async (req, res) => {
         if (user?.fcmToken) {
             await sendNotification(user.fcmToken, "SOS Status Update", `Your SOS status has been updated to: ${status}`);
         }
+        const mail = await statusUpdateMailSender({data:user,sos:updatedSos})
+        console.log("Mail sent to user:", mail);
+        
         console.log(`✅ SOS status updated to ${status} for ID: ${id}`);
         res.status(200).json({ message: "SOS status updated successfully", sos: updatedSos });
     } catch (error) {

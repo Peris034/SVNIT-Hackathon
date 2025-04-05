@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../Navbar";
-import { ToastContainer, toast } from "react-toastify";
+// import { ToastContainer, toast } from "react-toastify";
+import { toast } from 'react-hot-toast';
+
 import "react-toastify/dist/ReactToastify.css";
 
 const Incident = () => {
@@ -72,6 +74,7 @@ const Incident = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
 
     if (!formData.location.latitude || !formData.location.longitude) {
       toast.error("Location is required. Please enable GPS.");
@@ -109,6 +112,7 @@ const Incident = () => {
       setLoading(false);
       if (response.ok) {
         toast.success("Incident reported successfully!");
+
         setFormData({
           name: "",
           number: "",
@@ -133,7 +137,6 @@ const Incident = () => {
   return (
     <>
       <Navbar />
-      <ToastContainer />
       <div className="incident-container">
         <h1>Report an Incident</h1>
         <form className="incident-form" onSubmit={handleSubmit}>
@@ -168,7 +171,6 @@ const Incident = () => {
               required
               pattern="[0-9]{10}"
               maxLength="10"
-              placeholder="Enter 10 digit mobile number"
               title="Please enter a valid 10-digit phone number"
               className={`phone-input ${formData.number.length > 0 && formData.number.length < 10 ? 'invalid' : ''}`}
             />

@@ -2,6 +2,8 @@ import express from "express";
 import { upload, generatePublicUrl } from "../middlewares/multer.js";
 import Incident from "../models/Incident.js";
 import { incidentToken, authenticateToken, isAdmin } from "../middlewares/authMiddleware.js";
+import { incidentMailSender } from "../controllers/mailSender.js";
+import User from "../models/User.js";
 
 const router = express.Router();
 
@@ -34,8 +36,11 @@ router.post("/", incidentToken, upload.single("document"), generatePublicUrl, as
       otherCategoryMsg: otherCategory ? otherCategory : null,
       location: { latitude, longitude },
     });
-  
+    const user = await User.findById(req.userId);
+    
     await newIncident.save();
+    const mail = await incidentMailSender({data:user})
+    
     res.status(201).json({ success: true, message: "Incident reported successfully!" });
   } catch (error) {
     console.error("Error saving incident:", error.message);
