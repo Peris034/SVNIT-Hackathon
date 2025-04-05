@@ -35,6 +35,7 @@ export const registerUser = async (req, res) => {
 
         if (user) {
             res.status(201).json({
+                message: 'User registered successfully',
                 _id: user._id,
                 fullName: user.fullName,
                 email: user.email,
@@ -74,6 +75,7 @@ export const loginUser = async (req, res) => {
         });
 
         res.json({
+            message: 'Login successful',
             _id: user._id,
             fullName: user.fullName,
             email: user.email,

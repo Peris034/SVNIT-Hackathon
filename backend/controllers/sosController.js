@@ -27,6 +27,7 @@ export const triggerSos = async (req, res) => {
         });
 
         const adminUsers = await User.find({ role: "admin" }).select("fcmToken");
+        
         const adminTokens = adminUsers.map((user) => user.fcmToken).filter(Boolean);
         console.log(adminTokens);
         if (adminTokens.length > 0) {
