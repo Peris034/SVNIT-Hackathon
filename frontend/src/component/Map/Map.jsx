@@ -264,7 +264,7 @@ const Map = () => {
                       className="p-1 rounded-md border border-gray-300 text-gray-700"
                     >
                       {STATUS_OPTIONS.map((status) => (
-                        <option key={status} value={status}>
+                        <option key={status} className="text-gray-700 bg-white hover:bg-blue-100" value={status}>
                           {status}
                         </option>
                       ))}
