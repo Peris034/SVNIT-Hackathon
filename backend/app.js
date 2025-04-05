@@ -7,7 +7,7 @@ import userRoutes from "./routes/userRoutes.js";
 import emergencyContactRoutes from "./routes/emergencyContactRoutes.js";
 // import sosAlertRoutes from "./routes/sosAlertRoutes.js";
 import sosRoutes from "./routes/sosRoutes.js";
-// import postRoutes from "./routes/postRoutes.js"
+import postRoutes from "./routes/postRoutes.js"
 import incidentRoutes from "./routes/incidentRoutes.js"; // ✅ Added incident routes
 import dashboardRoute from "./routes/dashboardRoutes.js";
 dotenv.config();
@@ -23,7 +23,7 @@ app.use("/api/emergency-contacts", emergencyContactRoutes);
 // app.use("/api/sos-alerts", sosAlertRoutes);
 app.use("/api/sos", sosRoutes);
 app.use("/api/incident", incidentRoutes); // ✅ Incident routes
-// app.use("/api/posts", postRoutes); // ✅ Post routes
+app.use("/api/posts", postRoutes); // ✅ Post routes
 app.use("/api/dashboard",dashboardRoute)
 // Error Handling
 app.use((err, req, res, next) => {
