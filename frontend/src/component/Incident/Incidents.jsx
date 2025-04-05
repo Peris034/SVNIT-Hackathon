@@ -33,12 +33,15 @@ const Incidents = () => {
                     count: 0,
                     pending: 0,
                     resolved: 0,
+                    cancelled:0,
                     recent: []
                 };
             }
             acc[category].count++;
             if (incident.status === 'RESOLVED') {
                 acc[category].resolved++;
+            } else if (incident.status === 'CANCELLED'){
+                acc[category].cancelled++
             } else {
                 acc[category].pending++;
             }
@@ -52,7 +55,7 @@ const Incidents = () => {
 
     const handleStatusChange = async (newStatus, incidentId) => {
         try {
-            console.log('new status..',newStatus)
+            console.log('new status..', newStatus)
             const response = await fetch(`${import.meta.env.VITE_API_URL}/incident/status-change/${incidentId}`, {
                 method: 'PUT',
                 headers: {
@@ -171,13 +174,13 @@ const Incidents = () => {
 
     const handleStatusFilter = (e) => {
         const value = e.target.value;
-        console.log('e..target..value',value.toUpperCase())
+        console.log('e..target..value', value.toUpperCase())
         setStatusFilter(value.toUpperCase());
         filterData(searchTerm, value, selectedCategory);
     };
 
     const filterData = (search, status, category = selectedCategory) => {
-        console.log('statusss,,',status)
+        console.log('statusss,,', status)
         let filtered = incidents.filter((incident) => {
             console.log('incidents..', incidents)
             const matchesSearch = (incident?.name?.toLowerCase()?.includes(search) ||
@@ -293,6 +296,10 @@ const Incidents = () => {
                                             <span className="stat-value resolved">{stats.resolved}</span>
                                             <span className="stat-label">Resolved</span>
                                         </div>
+                                        <div className="stat-item">
+                                            <span className="stat-value cancelled">{stats.cancelled}</span>
+                                            <span className="stat-label">Cancelled</span>
+                                        </div>
                                     </div>
                                     <div className="recent-incidents">
                                         <h4>Recent Incidents</h4>
@@ -311,7 +318,7 @@ const Incidents = () => {
                                                     </span>
                                                 </div>
                                                 <span className={`status ${incident.status || 'pending'}`}>
-                                                    {incident.status || 'Pending'}
+                                                    {incident.status || 'PENDING'}
                                                 </span>
                                             </div>
                                         ))}
@@ -324,13 +331,14 @@ const Incidents = () => {
                     <>
                         <div className="controls">
                             <div className="search-filters">
-                            <select value={statusFilter} onChange={handleStatusFilter}>
-  <option value="ALL">All</option>
-  <option value="ACTIVE">Active</option>
-  <option value="PENDING">Pending</option>
-  <option value="RESOLVED">Resolved</option>
-</select>
-                                <select
+                                <select value={statusFilter} onChange={handleStatusFilter}>
+                                    <option value="ALL">All</option>
+                                    <option value="ACTIVE">Active</option>
+                                    <option value="CANCELLED">Cancelled</option>
+                                    <option value="PENDING">Pending</option>
+                                    <option value="RESOLVED">Resolved</option>
+                                </select>
+                                {/* <select
                                     value={selectedCategory}
                                     onChange={(e) => {
                                         setSelectedCategory(e.target.value);
@@ -341,7 +349,7 @@ const Incidents = () => {
                                     {Object.keys(categoryStats).map(category => (
                                         <option key={category} value={category}>{category}</option>
                                     ))}
-                                </select>
+                                </select> */}
                             </div>
                         </div>
 
@@ -501,6 +509,7 @@ const Incidents = () => {
 
                 .stat-value.pending { color: #f59e0b; }
                 .stat-value.resolved { color: #10b981; }
+                .stat-value.cancelled {color:black}
 
                 .stat-label {
                     font-size: 0.8rem;
