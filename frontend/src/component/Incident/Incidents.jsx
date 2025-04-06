@@ -14,6 +14,8 @@ const Incidents = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [locationStats, setLocationStats] = useState({});
     const [isLoadingLocations, setIsLoadingLocations] = useState(false);
+    const [selectedCategoryData, setSelectedCategoryData] = useState(null);
+    const [showCategoryModal, setShowCategoryModal] = useState(false);
 
     useEffect(() => {
         fetchIncidents();
@@ -24,6 +26,17 @@ const Incidents = () => {
             calculateCategoryStats();
         }
     }, [incidents]);
+
+    useEffect(() => {
+        if (selectedCategory !== 'all') {
+            const filtered = incidents.filter(incident => 
+                incident.category === selectedCategory
+            );
+            setFilteredIncidents(filtered);
+        } else {
+            setFilteredIncidents(incidents);
+        }
+    }, [selectedCategory, incidents]);
 
     const calculateCategoryStats = () => {
         const stats = incidents.reduce((acc, incident) => {
@@ -55,7 +68,6 @@ const Incidents = () => {
 
     const handleStatusChange = async (newStatus, incidentId) => {
         try {
-            console.log('new status..', newStatus)
             const response = await fetch(`${import.meta.env.VITE_API_URL}/incident/status-change/${incidentId}`, {
                 method: 'PUT',
                 headers: {
@@ -68,11 +80,62 @@ const Incidents = () => {
                 throw new Error('Failed to update status');
             }
 
-            // Optional: refresh incident list or update state manually
             const updatedIncident = await response.json();
+            
+            // First update the main incidents array
+            const updatedIncidents = incidents.map(item => 
+                item._id === incidentId ? { ...item, status: updatedIncident.status } : item
+            );
+            setIncidents(updatedIncidents);
+
+            // Then update filtered incidents
             setFilteredIncidents(prev =>
                 prev.map(item => item._id === incidentId ? { ...item, status: updatedIncident.status } : item)
             );
+
+            // Calculate new category stats
+            const newStats = updatedIncidents.reduce((acc, incident) => {
+                const category = incident.category || 'Uncategorized';
+                if (!acc[category]) {
+                    acc[category] = {
+                        count: 0,
+                        pending: 0,
+                        resolved: 0,
+                        cancelled: 0,
+                        recent: []
+                    };
+                }
+                acc[category].count++;
+                
+                // Update status counts
+                if (incident.status === 'RESOLVED') {
+                    acc[category].resolved++;
+                } else if (incident.status === 'CANCELLED') {
+                    acc[category].cancelled++;
+                } else {
+                    acc[category].pending++;
+                }
+
+                // Keep track of recent incidents
+                acc[category].recent = acc[category].recent || [];
+                acc[category].recent.push(incident);
+                acc[category].recent.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                acc[category].recent = acc[category].recent.slice(0, 5);
+
+                return acc;
+            }, {});
+
+            // Update category stats state
+            setCategoryStats(newStats);
+
+            // If we have a selected category data open in modal, update it
+            if (selectedCategoryData && selectedCategoryData.category === updatedIncident.category) {
+                setSelectedCategoryData({
+                    ...selectedCategoryData,
+                    ...newStats[updatedIncident.category]
+                });
+            }
+
         } catch (err) {
             console.error(err);
             alert('Failed to update status.');
@@ -242,6 +305,61 @@ const Incidents = () => {
         </div>
     );
 
+    const CategoryModal = ({ category, data, onClose }) => (
+        <div className="category-modal" onClick={(e) => {
+            if (e.target.className === 'category-modal') onClose();
+        }}>
+            <div className="category-modal-content">
+                <button className="close-btn" onClick={onClose}>✖</button>
+                <h2>{category} Incidents</h2>
+                <div className="category-stats-summary">
+                    <div className="stat-box">
+                        <span className="stat-number">{data.count}</span>
+                        <span className="stat-label">Total</span>
+                    </div>
+                    <div className="stat-box">
+                        <span className="stat-number pending">{data.pending}</span>
+                        <span className="stat-label">Pending</span>
+                    </div>
+                    <div className="stat-box">
+                        <span className="stat-number resolved">{data.resolved}</span>
+                        <span className="stat-label">Resolved</span>
+                    </div>
+                    <div className="stat-box">
+                        <span className="stat-number cancelled">{data.cancelled}</span>
+                        <span className="stat-label">Cancelled</span>
+                    </div>
+                </div>
+                <div className="category-incidents-list">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Message</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {data.recent.map(incident => (
+                                <tr key={incident._id}>
+                                    <td>{incident.name}</td>
+                                    <td>{incident.message}</td>
+                                    <td>
+                                        <span className={`status-badge ${incident.status.toLowerCase()}`}>
+                                            {incident.status}
+                                        </span>
+                                    </td>
+                                    <td>{new Date(incident.createdAt).toLocaleDateString()}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
+
     return (
         <>
             <Navbar />
@@ -271,7 +389,56 @@ const Incidents = () => {
                             Location Clusters
                         </button>
                     </div>
+                    <div className="category-select-wrapper">
+                        <select 
+                            className="category-select"
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            value={selectedCategory}
+                        >
+                            <option value="all">All Categories</option>
+                            {Object.keys(categoryStats).map(category => (
+                                <option key={category} value={category}>{category}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
+
+                {selectedCategory !== 'all' && (
+                    <div className="category-cards">
+                        {Object.entries(categoryStats)
+                            .filter(([category]) => selectedCategory === 'all' || category === selectedCategory)
+                            .map(([category, stats]) => (
+                                <div 
+                                    key={category} 
+                                    className="category-stat-card"
+                                    onClick={() => {
+                                        setSelectedCategoryData({ category, ...stats });
+                                        setShowCategoryModal(true);
+                                    }}
+                                >
+                                    <h3>{category}</h3>
+                                    <div className="stat-grid">
+                                        <div className="stat-item">
+                                            <span className="stat-number">{stats.count}</span>
+                                            <span className="stat-label">Total</span>
+                                        </div>
+                                        <div className="stat-item">
+                                            <span className="stat-number pending">{stats.pending}</span>
+                                            <span className="stat-label">Pending</span>
+                                        </div>
+                                        <div className="stat-item">
+                                            <span className="stat-number resolved">{stats.resolved}</span>
+                                            <span className="stat-label">Resolved</span>
+                                        </div>
+                                        <div className="stat-item">
+                                            <span className="stat-number cancelled">{stats.cancelled}</span>
+                                            <span className="stat-label">Cancelled</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                    </div>
+                )}
 
                 {view === 'location' ? (
                     <LocationClusterView />
@@ -329,13 +496,13 @@ const Incidents = () => {
                     <>
                         <div className="controls">
                             <div className="search-filters">
-                                <select value={statusFilter} onChange={handleStatusFilter}>
+                                {/* <select value={statusFilter} onChange={handleStatusFilter}>
                                     <option value="ALL">All</option>
                                     <option value="ACTIVE">Active</option>
                                     <option value="CANCELLED">Cancelled</option>
                                     <option value="PENDING">Pending</option>
                                     <option value="RESOLVED">Resolved</option>
-                                </select>
+                                </select> */}
                                 {/* <select
                                     value={selectedCategory}
                                     onChange={(e) => {
@@ -435,6 +602,14 @@ const Incidents = () => {
                             )}
                         </div>
                     </div>
+                )}
+
+                {showCategoryModal && selectedCategoryData && (
+                    <CategoryModal 
+                        category={selectedCategoryData.category}
+                        data={selectedCategoryData}
+                        onClose={() => setShowCategoryModal(false)}
+                    />
                 )}
             </div>
 
@@ -720,6 +895,131 @@ const Incidents = () => {
 
                     .preview-content iframe {
                         height: 60vh;
+                    }
+                }
+
+                .category-select-wrapper {
+                    margin: 20px 0;
+                }
+
+                .category-select {
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    border: 1px solid #ddd;
+                    font-size: 16px;
+                    min-width: 200px;
+                }
+
+                .category-cards {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                    gap: 20px;
+                    padding: 20px;
+                }
+
+                .category-stat-card {
+                    background: white;
+                    border-radius: 10px;
+                    padding: 20px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    cursor: pointer;
+                    transition: transform 0.2s, box-shadow 0.2s;
+                }
+
+                .category-stat-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                }
+
+                .stat-grid {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 15px;
+                    margin-top: 15px;
+                }
+
+                .stat-number {
+                    font-size: 24px;
+                    font-weight: bold;
+                    display: block;
+                }
+
+                .stat-number.pending { color: #f59e0b; }
+                .stat-number.resolved { color: #10b981; }
+                .stat-number.cancelled { color: #ef4444; }
+
+                .category-modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.75);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                }
+
+                .category-modal-content {
+                    background: white;
+                    border-radius: 12px;
+                    padding: 24px;
+                    width: 90%;
+                    max-width: 900px;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                }
+
+                .category-stats-summary {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: 15px;
+                    margin: 20px 0;
+                }
+
+                .stat-box {
+                    background: #f8f9fa;
+                    padding: 15px;
+                    border-radius: 8px;
+                    text-align: center;
+                }
+
+                .category-incidents-list {
+                    margin-top: 20px;
+                }
+
+                .category-incidents-list table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+
+                .category-incidents-list th,
+                .category-incidents-list td {
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 1px solid #eee;
+                }
+
+                .status-badge {
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    font-weight: 500;
+                }
+
+                .status-badge.pending { background: #fef3c7; color: #92400e; }
+                .status-badge.resolved { background: #d1fae5; color: #065f46; }
+                .status-badge.cancelled { background: #fee2e2; color: #991b1b; }
+
+                @media (max-width: 768px) {
+                    .category-stats-summary {
+                        grid-template-columns: repeat(2, 1fr);
+                    }
+
+                    .category-modal-content {
+                        padding: 16px;
+                        width: 95%;
                     }
                 }
             `}</style>
