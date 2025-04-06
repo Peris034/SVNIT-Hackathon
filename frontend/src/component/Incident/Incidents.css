@@ -46,12 +46,12 @@ input, select {
 }
 
 .incident-table th {
-    background: #007bff;
+    background:oklch(70.2% 0.183 293.541);
     color: white;
 }
 
 .incident-table a {
-    color: #007bff;
+    color: oklch(70.2% 0.183 293.541);
     text-decoration: none;
 }
 

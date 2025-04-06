@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar";
 import CreatePost from "./CreatePost";
 import PostList from "./PostList";
+import { FaCheck } from "react-icons/fa"
+import { MdCancel } from "react-icons/md";
 
 const Adminpost = () => {
     const [pendingPosts, setPendingPosts] = useState([]);
@@ -114,15 +116,15 @@ const Adminpost = () => {
                                     <div className="mt-3 flex gap-3">
                                         <button
                                             onClick={() => handleApproval(post._id, "approved")}
-                                            className="bg-green-500 cursor-pointer text-white px-3 py-1 rounded-md"
+                                            className="bg-lime-600 cursor-pointer flex text-white px-3 py-1 rounded-md justify-center items-center gap-2"
                                         >
-                                            ✅ Approve
+                                            <FaCheck/> Approve
                                         </button>
                                         <button
                                             onClick={() => handleApproval(post._id, "rejected")}
-                                            className="cursor-pointer bg-red-500 text-white px-3 py-1 rounded-md"
+                                            className="cursor-pointer bg-rose-600 text-white px-3 py-1 rounded-md flex justify-center items-center gap-2"
                                         >
-                                            ❌ Reject
+                                            <MdCancel/> Reject
                                         </button>
                                     </div>
                                 </div>

@@ -247,7 +247,7 @@ const Incidents = () => {
             <Navbar />
             <div className="incidents-container">
                 <div className="header-controls">
-                    <h1>Incident Management</h1>
+                    <h1 className="text-2xl pl-5">Incident Management</h1>
                     <div className="view-toggles">
                         <button
                             className={`view-btn ${view === 'table' ? 'active' : ''}`}
@@ -464,9 +464,8 @@ const Incidents = () => {
                 }
 
                 .view-btn.active {
-                    background: #007bff;
+                    background:oklch(70.2% 0.183 293.541);
                     color: white;
-                    border-color: #007bff;
                 }
 
                 .clusters-container {

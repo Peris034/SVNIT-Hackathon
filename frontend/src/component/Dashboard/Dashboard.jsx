@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import { FaUsers, FaBell, FaMapMarkerAlt, FaUserShield } from 'react-icons/fa';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+
 const API_URL = import.meta.env.VITE_API_URL;
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -10,7 +12,8 @@ const Dashboard = () => {
     activeUsers: 0,
     totalAlerts: 0,
     recentAlerts: [],
-    recentUsers: []
+    recentUsers: [],
+    chartData: []
   });
 
   const [loading, setLoading] = useState(true);
@@ -92,6 +95,51 @@ const Dashboard = () => {
     return Math.floor(seconds) + " seconds ago";
   };
 
+  const StatusPieChart = ({ data }) => {
+    const COLORS = {
+      ACTIVE: '#FF5733',
+      PENDING: '#007BFF',
+      RESOLVED: '#28A745',
+      CANCELLED: '#6C757D'
+    };
+
+    const pieData = data.map(item => ({
+      name: item._id || 'UNKNOWN',
+      value: item.count
+    }));
+
+    return (
+      <div className="card">
+        <h2>SOS Emergency Alert</h2>
+        <div style={{ width: '100%', height: 300 }}>
+          <ResponsiveContainer>
+            <PieChart>
+              <Pie
+                data={pieData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(1)}%)`}
+                outerRadius={100}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {pieData.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={COLORS[entry.name] || '#8884d8'}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="dashboard">
       <Navbar />
@@ -129,6 +177,10 @@ const Dashboard = () => {
             icon={<FaMapMarkerAlt />}
             color="#FF9800"
           /> */}
+        </div>
+
+        <div className="chart-section">
+          {stats.chartData && <StatusPieChart data={stats.chartData} />}
         </div>
 
         <div className="dashboard-cards">
