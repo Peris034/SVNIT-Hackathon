@@ -57,6 +57,7 @@ const Incident = () => {
         const data = await res.json();
         if (res.ok) {
           setIncidentHistory(data.incidents || []);
+          console.log("firstdddd", data.incidents);
         } else {
           toast.error("Failed to load history");
         }
@@ -92,7 +93,7 @@ const Incident = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log("inside submit", formData);
     if (!formData.location.latitude || !formData.location.longitude) {
       toast.error("Location is required. Please enable GPS.");
       return;
@@ -164,13 +165,7 @@ const Incident = () => {
               {/* <span className="close-btn" onClick={() => setIsModalOpen(false)}>&times;</span> */}
               <h2 className="text-center m-5">Report an Incident</h2>
               <form className="incident-form" onSubmit={handleSubmit}>
-                {formData.category === "Other" && (
-                  <div className="form-group">
-                    <label>Specify Category</label>
-                    <input type="text" name="otherCategory" value={formData.otherCategory}
-                      onChange={handleChange} placeholder="Please specify" required />
-                  </div>
-                )}
+
 
                 <div className="form-group">
                   <label>Name</label>
@@ -191,6 +186,14 @@ const Incident = () => {
                     {categories.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
                   </select>
                 </div>
+
+                {formData.category === "Other" && (
+                  <div className="form-group">
+                    <label>Specify Category</label>
+                    <input type="text" name="otherCategory" value={formData.otherCategory}
+                      onChange={handleChange} placeholder="Please specify" required />
+                  </div>
+                )}
 
                 <div className="form-group">
                   <label>Address</label>
@@ -240,15 +243,15 @@ const Incident = () => {
                   {incidentHistory.map((incident, idx) => (
                     <tr key={idx}>
                       <td>{idx + 1}</td>
-                      <td>{incident.otherCategoryMsg || incident.category}</td>
-                      <td>{incident.message}</td>
-                      <td>{incident.address}</td>
-                      <td>{incident.number}</td>
-                      <td>{incident.status}</td>
+                      <td>{incident?.otherCategoryMsg || incident?.category || null}</td>
+                      <td>{incident?.message}</td>
+                      <td>{incident?.address}</td>
+                      <td>{incident?.number}</td>
+                      <td>{incident?.status}</td>
                       <td>
-                        {incident.documentUrl ? (
+                        {incident?.documentUrl ? (
                           <a
-                            href={incident.documentUrl}
+                            href={incident?.documentUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -258,7 +261,7 @@ const Incident = () => {
                           "N/A"
                         )}
                       </td>
-                      <td>{incident.createdAt}</td>
+                      <td>{incident?.createdAt}</td>
                     </tr>
                   ))}
                 </tbody>
