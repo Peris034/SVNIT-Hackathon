@@ -8,24 +8,20 @@ const Account = () => {
   const [activeItem, setActiveItem] = useState(null)
   const [contentHeight, setContentHeight] = useState("100vh")
 
-  // Function to update content height
   const updateContentHeight = useCallback(() => {
     const mainContent = document.getElementById("main-content")
     if (mainContent) {
       const contentHeight = mainContent.scrollHeight
       const viewportHeight = window.innerHeight
-      const navbarHeight = 60 // Height of the navbar
+      const navbarHeight = 60
       setContentHeight(`${Math.max(contentHeight + navbarHeight, viewportHeight)}px`)
     }
   }, [])
 
-  // Update height on mount and when content changes
   useEffect(() => {
     updateContentHeight()
-    // Add resize listener
     window.addEventListener("resize", updateContentHeight)
 
-    // Create a MutationObserver to watch for content changes
     const observer = new MutationObserver(updateContentHeight)
     const mainContent = document.getElementById("main-content")
     if (mainContent) {
@@ -36,89 +32,89 @@ const Account = () => {
       })
     }
 
-    // Cleanup
     return () => {
       window.removeEventListener("resize", updateContentHeight)
       observer.disconnect()
     }
   }, [updateContentHeight])
 
-  // Inline styles
   const styles = {
     container: {
       display: "flex",
       minHeight: contentHeight,
-      backgroundColor: "#FFFFFF", // Changed to white background
+      backgroundColor: "#F9FAFB",
       position: "relative",
     },
     sidebar: {
       width: "250px",
-      backgroundColor: "#F5F7FA", // Lighter gray color matching the image
+      backgroundColor: "#FFFFFF",
       height: "100%",
-      padding: "20px",
-      fontFamily: "Arial, sans-serif",
+      padding: "24px 20px",
+      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
       position: "sticky",
-      top: "60px", // Stick below navbar
+      top: "60px",
       overflowY: "auto",
-      maxHeight: `calc(100vh - 60px)`, // Subtract navbar height
-      borderRight: "none", // Remove border
+      maxHeight: `calc(100vh - 60px)`,
+      borderRight: "1px solid #E5E7EB",
+      boxShadow: "2px 0 6px rgba(0, 0, 0, 0.05)",
     },
     sidebarHeading: {
-      color: "#333333",
-      fontSize: "20px", // Slightly smaller
-      fontWeight: "bold",
-      textAlign: "left", // Left aligned instead of center
-      marginBottom: "25px",
-      padding: "10px 0",
-      borderBottom: "none", // Remove border
+      color: "#111827",
+      fontSize: "18px",
+      fontWeight: "600",
+      textAlign: "left",
+      marginBottom: "20px",
+      paddingBottom: "10px",
+      borderBottom: "1px solid #E5E7EB",
     },
     navList: {
       listStyle: "none",
-      padding: "0",
-      margin: "0",
+      padding: 0,
+      margin: 0,
     },
     navItem: {
-      marginBottom: "8px",
+      marginBottom: "10px",
     },
     navLink: (isActive) => ({
-      display: "block",
+      display: "flex",
+      alignItems: "center",
       padding: "10px 15px",
-      fontSize: "14px", // Smaller font
-      fontWeight: isActive ? "600" : "400", // Only bold when active
-      color: isActive ? "#1E40AF" : "#4B5563", // Darker gray for inactive
+      fontSize: "15px",
+      fontWeight: isActive ? "600" : "500",
+      color: isActive ? "#1D4ED8" : "#374151",
       textDecoration: "none",
-      borderRadius: "4px",
-      backgroundColor: isActive ? "#EFF6FF" : "transparent", // Lighter blue background when active
-      transition: "all 0.2s ease",
+      borderRadius: "6px",
+      backgroundColor: isActive ? "#E0F2FE" : "transparent",
+      transition: "background-color 0.3s, color 0.3s, box-shadow 0.3s",
+      boxShadow: isActive ? "inset 0 0 0 1px #93C5FD" : "none",
     }),
     navLinkHover: {
-      backgroundColor: "#F3F4F6", // Very subtle hover effect
+      backgroundColor: "#F3F4F6",
     },
     mainContent: {
       flexGrow: 1,
-      padding: "20px 30px",
-      background: "#ffffff",
-      color: "#333333",
+      padding: "30px 40px",
+      backgroundColor: "#FFFFFF",
+      color: "#1F2937",
       minHeight: `calc(100vh - 60px)`,
       overflowX: "hidden",
+      boxShadow: "inset 0 1px 0 rgba(0,0,0,0.03)",
     },
     mainWrapper: {
       display: "flex",
       flexDirection: "column",
-      minHeight: `calc(100vh - 60px)`, // Minimum height minus navbar
+      minHeight: `calc(100vh - 60px)`,
     },
   }
 
   const navItems = [
     { title: "Login Detail", icon: "👤" },
-  
   ]
 
   return (
     <div style={styles.mainWrapper}>
       <Navbar />
       <div style={styles.container}>
-        {/* Sidebar */}
         <aside style={styles.sidebar}>
           <h2 style={styles.sidebarHeading}>Account</h2>
           <ul style={styles.navList}>
@@ -136,7 +132,7 @@ const Account = () => {
                   to={`/account/${item.title.toLowerCase().replace(/\s+/g, "")}`}
                   style={({ isActive }) => ({
                     ...styles.navLink(isActive),
-                    ...(activeItem === index ? styles.navLinkHover : {}),
+                    ...(activeItem === index && !isActive ? styles.navLinkHover : {}),
                   })}
                 >
                   <span style={{ marginRight: "10px" }}>{item.icon}</span>
@@ -147,7 +143,6 @@ const Account = () => {
           </ul>
         </aside>
 
-        {/* Main Content */}
         <main id="main-content" style={styles.mainContent}>
           <Outlet />
         </main>
